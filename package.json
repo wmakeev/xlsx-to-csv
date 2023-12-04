@@ -16,7 +16,7 @@
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
   "scripts": {
-    "test": "echo \"no tests specified\"",
+    "test": "node -r dotenv/config ./build/test/index.test.js",
     "lint": "eslint . --fix",
     "cleanup": "rm -rf build/",
     "compile:dev": "tsc",
@@ -69,7 +69,6 @@
   },
   "dependencies": {
     "@wmakeev/highland-tools": "^1.9.1",
-    "csv-parse": "^5.5.2",
     "exceljs": "^4.4.0",
     "highland": "^2.13.5"
   }

@@ -4,8 +4,9 @@ import test from 'node:test'
 import { writeFile, mkdir } from 'node:fs/promises'
 import { stringify } from 'csv-stringify/sync'
 
-import { XlsxToCsvParser } from '../src/index.js'
-import { fillHeadFieldValue } from '../src/tools/index.js'
+import { XlsxToCsvParser, tools } from '../src/index.js'
+
+const { fillHeadFieldValue } = tools
 
 /**
  * Get simple table on first sheet
@@ -13,7 +14,7 @@ import { fillHeadFieldValue } from '../src/tools/index.js'
  * - Table from first sheet
  * - Table header is on first row
  */
-test.skip('Simple table', async () => {
+test('Simple table', async () => {
   const XLSX_FILE = path.join(process.cwd(), 'test/cases/01_simple.xlsx')
 
   // Simple case without config
@@ -45,7 +46,7 @@ test.skip('Simple table', async () => {
 /**
  *
  */
-test.skip('Simple table (formats)', async () => {
+test('Simple table (formats)', async () => {
   const XLSX_FILE = path.join(process.cwd(), 'test/cases/01_simple.xlsx')
 
   const parser = new XlsxToCsvParser()
