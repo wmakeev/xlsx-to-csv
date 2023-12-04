@@ -169,3 +169,9 @@ export interface Config {
 
   cellToString?: (cell: Cell) => string
 }
+
+export interface SheetRowsStreamInfo {
+  sheetName: string
+  sheetIndex: number
+  rows$: Highland.Stream<(string | undefined)[]>
+}

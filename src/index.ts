@@ -1,10 +1,17 @@
+import { fromAsyncGenerator } from '@wmakeev/highland-tools'
 import ExcelJS, { Cell } from 'exceljs'
 import assert from 'node:assert'
-import { fromAsyncGenerator } from '@wmakeev/highland-tools'
-import { AssertConfig, Config, HeadFieldConfig } from './types.js'
+import { Stream } from 'node:stream'
 
-export * from './types.js'
+import {
+  AssertConfig,
+  Config,
+  HeadFieldConfig,
+  SheetRowsStreamInfo
+} from './types.js'
+
 export * as tools from './tools/index.js'
+export * from './types.js'
 
 export const defaultGetCellValue = (cell: Cell | undefined): string => {
   return cell?.text ?? ''
@@ -248,32 +255,16 @@ export class XlsxToCsvParser {
   }
 
   /**
-   * Получить строки указанного листа
-   *
-   * @param file Путь к xlsx файлу
-   * @param sheet Наименование листа или его индекс (если не указано, то первый лист)
-   * @returns Highland покток строк таблицы листа
+   * @param file Path to xlsx file
    */
-  async getSheetRowsStream(file: string, sheet?: string | number) {
-    const result$ = await this.getSheetsStream(file)
-      .find(it => {
-        if (sheet == null) return true
-
-        return typeof sheet === 'number'
-          ? it.sheetIndex === sheet
-          : it.sheetName === sheet
-      })
-      .map(it => it.rows$)
-      .last()
-      .toPromise(Promise)
-
-    return result$
-  }
+  getSheetsStream(file: string): Highland.Stream<SheetRowsStreamInfo>
 
   /**
-   * @param file Путь к XLSX файлу
+   * @param stream xlsx content stream
    */
-  getSheetsStream(file: string) {
+  getSheetsStream(stream: Stream): Highland.Stream<SheetRowsStreamInfo>
+
+  getSheetsStream(file: string | Stream): Highland.Stream<SheetRowsStreamInfo> {
     const sheetsGen = async function* () {
       const workbookReader = new ExcelJS.stream.xlsx.WorkbookReader(file, {})
 
@@ -297,5 +288,48 @@ export class XlsxToCsvParser {
         }
       }
     )
+  }
+
+  /**
+   * Get rows from specified xlsx sheet
+   *
+   * @param file Path to file
+   * @param sheet Sheet name or index (if not specified first sheet is selected)
+   * @returns Highland rows stream
+   */
+  async getSheetRowsStream(
+    file: string,
+    sheet?: string | number
+  ): Promise<Highland.Stream<(string | undefined)[]>>
+
+  /**
+   * Get rows from specified xlsx sheet
+   *
+   * @param stream xlsx file steam
+   * @param sheet Sheet name or index (if not specified first sheet is selected)
+   * @returns Highland rows stream
+   */
+  async getSheetRowsStream(
+    stream: Stream,
+    sheet?: string | number
+  ): Promise<Highland.Stream<(string | undefined)[]>>
+
+  async getSheetRowsStream(file: string | Stream, sheet: string | number = 0) {
+    const result$ = await // FIXME types
+    (typeof file === 'string'
+      ? this.getSheetsStream(file)
+      : this.getSheetsStream(file)
+    )
+
+      .find(it => {
+        return typeof sheet === 'number'
+          ? it.sheetIndex === sheet
+          : it.sheetName === sheet
+      })
+      .map(it => it.rows$)
+      .last()
+      .toPromise(Promise)
+
+    return result$
   }
 }

@@ -1,9 +1,10 @@
 import assert from 'assert/strict'
+import { stringify } from 'csv-stringify/sync'
+import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import test from 'node:test'
-import { writeFile, mkdir } from 'node:fs/promises'
-import { stringify } from 'csv-stringify/sync'
 
+import { createReadStream } from 'fs'
 import { XlsxToCsvParser, tools } from '../src/index.js'
 
 const { fillHeadFieldValue } = tools
@@ -242,7 +243,9 @@ test('Simple table (formats)', async () => {
     ]
   })
 
-  const rows$ = await parser.getSheetRowsStream(XLSX_FILE)
+  const xlsxStream = createReadStream(XLSX_FILE)
+
+  const rows$ = await parser.getSheetRowsStream(xlsxStream)
 
   assert.ok(rows$)
 
