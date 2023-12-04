@@ -1,6 +1,6 @@
 {
   "name": "@wmakeev/xlsx-to-csv",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "description": "Streaming convert from xlsx to csv with fine tuning based on exceljs lib.",
   "keywords": [
