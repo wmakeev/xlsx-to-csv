@@ -3,6 +3,9 @@ import assert from 'node:assert'
 import { fromAsyncGenerator } from '@wmakeev/highland-tools'
 import { AssertConfig, Config, HeadFieldConfig } from './types.js'
 
+export * from './types.js'
+export * as tools from './tools/index.js'
+
 export const defaultGetCellValue = (cell: Cell | undefined): string => {
   return cell?.text ?? ''
 }
