@@ -14,7 +14,7 @@ export * as tools from './tools/index.js'
 export * from './types.js'
 
 export const defaultGetCellValue = (cell: Cell | undefined): string => {
-  return cell?.text ?? ''
+  return cell?.text.trim() ?? ''
 }
 
 async function* sheetRowsGen(
