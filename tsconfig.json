@@ -1,0 +1,17 @@
+{
+  "extends": [
+    "@tsconfig/node18/tsconfig.json",
+    "@tsconfig/strictest/tsconfig.json"
+  ],
+  "compilerOptions": {
+    "outDir": "build",
+    "sourceMap": true,
+    "declaration": true,
+    "plugins": [
+      {
+        "name": "typescript-eslint-language-service"
+      }
+    ]
+  },
+  "include": ["src/**/*", "test/**/*"]
+}
