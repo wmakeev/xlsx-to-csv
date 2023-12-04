@@ -16,13 +16,13 @@
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
   "scripts": {
-    "test": "node -r dotenv/config ./build/test/index.test.js",
     "lint": "eslint . --fix",
     "cleanup": "rm -rf build/",
     "compile:dev": "tsc",
     "compile": "tsc --build tsconfig.prod.json",
     "build:dev": "npm run lint && npm run compile:dev",
     "build": "npm run cleanup && npm run lint && npm run compile",
+    "test": "npm run build && node -r dotenv/config ./build/test/index.test.js",
     "version": "auto-changelog -p && git add CHANGELOG.md",
     "release": "np"
   },
