@@ -67,10 +67,7 @@ test('Simple table (formats)', async () => {
   )
 })
 
-/**
- *
- */
-test('Simple table (formats)', async () => {
+test('Complex report #1', async () => {
   const XLSX_FILE = path.join(process.cwd(), 'test/cases/02_report_1.xlsx')
 
   const parser = new XlsxToCsvParser({
@@ -304,7 +301,199 @@ test('Simple table (formats)', async () => {
   await mkdir(reportPath, { recursive: true })
 
   await writeFile(
-    path.join(reportPath, 'report.csv'),
+    path.join(reportPath, 'report-1.csv'),
+    stringify(rows, { bom: true }),
+    'utf-8'
+  )
+})
+
+test('Complex report #2', async () => {
+  const XLSX_FILE = path.join(process.cwd(), 'test/cases/02_report_1.xlsx')
+
+  const parser = new XlsxToCsvParser({
+    sheetConfigs: [
+      {
+        asserts: [
+          {
+            name: 'Заголовок',
+            columnKey: 'A',
+            rowNum: 2,
+            assert: cell => cell?.text.startsWith('Финансовый отчет')
+          },
+          {
+            name: 'Продавец',
+            columnKey: 'A',
+            rowNum: 4,
+            assert: cell => cell?.text === 'Продавец:'
+          },
+          {
+            name: 'Договор',
+            columnKey: 'A',
+            rowNum: 5,
+            assert: cell => cell?.text === 'Договор:'
+          },
+          {
+            name: 'Номер п/п',
+            columnKey: 'A',
+            rowNum: 6,
+            assert: cell => cell?.text === 'Номер п/п:'
+          },
+          {
+            name: 'Дата п/п',
+            columnKey: 'A',
+            rowNum: 7,
+            assert: cell => cell?.text === 'Дата п/п:'
+          }
+        ],
+
+        headFields: [
+          {
+            name: 'Финансовый отчет',
+            columnKey: 'A',
+            rowNum: 2,
+            value: ({ cell }) => cell.text.split(' ')[3]
+          },
+          {
+            name: 'Продавец',
+            columnKey: 'C',
+            rowNum: 4
+          },
+
+          {
+            name: 'Договор',
+            columnKey: 'C',
+            rowNum: 5,
+            value: ({ cell }) => cell.text.split('№')[1]?.split('от')[0]?.trim()
+          },
+          {
+            name: 'Номер п/п',
+            columnKey: 'C',
+            rowNum: 6
+          },
+          {
+            name: 'Дата п/п',
+            columnKey: 'C',
+            rowNum: 7
+          }
+        ],
+
+        headerRow: 11,
+
+        headers: [
+          {
+            type: 'virtual',
+            name: 'Финансовый отчет',
+            value: fillHeadFieldValue()
+          },
+          {
+            type: 'virtual',
+            name: 'Продавец',
+            value: fillHeadFieldValue()
+          },
+          {
+            type: 'virtual',
+            name: 'Договор',
+            value: fillHeadFieldValue()
+          },
+          {
+            type: 'virtual',
+            name: 'Номер п/п',
+            value: fillHeadFieldValue()
+          },
+          {
+            type: 'virtual',
+            name: 'Дата п/п',
+            value: fillHeadFieldValue()
+          },
+          {
+            type: 'actual',
+            name: 'Отправление Маркетплейс / id задолженности'
+          },
+          {
+            type: 'actual',
+            name: 'Описание (расшифровка)'
+          },
+          {
+            type: 'actual',
+            name: 'Заказ Продавца'
+          },
+          {
+            type: 'actual',
+            name: 'Классификатор'
+          },
+          {
+            type: 'actual',
+            name: 'Долг компании',
+            headerNameTest: name => name?.startsWith('Итого') ?? false
+          }
+        ],
+
+        rowsFilter(row) {
+          return row[5] !== '' && row[5] !== 'Итого' && row[9] !== ''
+        }
+      }
+    ]
+  })
+
+  const xlsxStream = createReadStream(XLSX_FILE)
+
+  const rows$ = await parser.getSheetRowsStream(xlsxStream)
+
+  assert.ok(rows$)
+
+  const rows = await rows$.collect().toPromise(Promise)
+
+  const sample = rows.slice(0, 3)
+
+  assert.deepEqual(
+    sample,
+    [
+      [
+        'Финансовый отчет',
+        'Продавец',
+        'Договор',
+        'Номер п/п',
+        'Дата п/п',
+        'Отправление Маркетплейс / id задолженности',
+        'Описание (расшифровка)',
+        'Заказ Продавца',
+        'Классификатор',
+        'Долг компании'
+      ],
+      [
+        'МПБЛ-108601',
+        'Иван Иванович Иванов',
+        'К-4284-05-2020',
+        '529999',
+        '22.11.2023',
+        '8010968940808',
+        '',
+        '8010968940808',
+        'Вознаграждение оператора ПЛ',
+        '25.15'
+      ],
+      [
+        'МПБЛ-108601',
+        'Иван Иванович Иванов',
+        'К-4284-05-2020',
+        '529999',
+        '22.11.2023',
+        '8011422267125',
+        '',
+        '8011422267125',
+        'Вознаграждение за предоставление поощрения',
+        '991'
+      ]
+    ],
+    'should return rows'
+  )
+
+  const reportPath = path.join(process.cwd(), '__temp/test-out/sm')
+
+  await mkdir(reportPath, { recursive: true })
+
+  await writeFile(
+    path.join(reportPath, 'report-2.csv'),
     stringify(rows, { bom: true }),
     'utf-8'
   )

@@ -144,7 +144,7 @@ async function* sheetRowsGen(
         if (columnKey == null) {
           const headerTest =
             headerConf.headerNameTest ??
-            (headerConf.name == null
+            (headerConf.name != null
               ? headerName => headerName === headerConf.name
               : undefined)
 
