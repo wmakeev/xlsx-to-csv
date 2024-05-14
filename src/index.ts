@@ -315,8 +315,7 @@ export class XlsxToCsvParser {
   ): Promise<Highland.Stream<(string | undefined)[]>>
 
   async getSheetRowsStream(file: string | Stream, sheet: string | number = 0) {
-    const result$ = await // FIXME types
-    (typeof file === 'string'
+    const result$ = await (typeof file === 'string'
       ? this.getSheetsStream(file)
       : this.getSheetsStream(file)
     )
