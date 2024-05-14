@@ -1,8 +1,6 @@
-import { Cell, CellValue, Row } from 'exceljs'
+import { Cell, CellValue, Row } from '@wmakeev/exceljs'
 
-export type { Row } from 'exceljs'
-export type { Cell } from 'exceljs'
-export type { CellValue } from 'exceljs'
+export type { Cell, CellValue, Row } from '@wmakeev/exceljs'
 
 export type ActualRowArg = {
   value: CellValue

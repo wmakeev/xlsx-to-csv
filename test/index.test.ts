@@ -498,3 +498,70 @@ test('Complex report #2', async () => {
     'utf-8'
   )
 })
+
+test('Complex report #3', async () => {
+  const xlsxParser = new XlsxToCsvParser({
+    sheetConfigs: [
+      {
+        headers: [
+          {
+            type: 'actual',
+            name: 'Кабинет поставщика'
+          },
+          {
+            type: 'actual',
+            name: 'Ид кабинета поставщика'
+          },
+          {
+            type: 'actual',
+            name: 'Артикул поставщика (uid)'
+          },
+          {
+            type: 'actual',
+            name: 'Название товара'
+          },
+          {
+            type: 'actual',
+            name: 'Код размера (chrt_id)'
+          },
+          {
+            type: 'actual',
+            name: 'Артикул WB'
+          },
+          {
+            type: 'actual',
+            name: 'Артикул ИМТ'
+          },
+          {
+            type: 'actual',
+            name: 'Размер'
+          },
+          {
+            type: 'actual',
+            name: 'Штрихкод'
+          },
+          {
+            type: 'actual',
+            name: 'Торговая марка'
+          }
+        ]
+      }
+    ]
+  })
+
+  const XLSX_FILE = path.join(process.cwd(), 'test/cases/1401887.xlsx')
+
+  const xlsxStream = createReadStream(XLSX_FILE, {
+    highWaterMark: 2000
+  })
+
+  const rows = await (await xlsxParser.getSheetRowsStream(xlsxStream))
+    .collect()
+    .toPromise(Promise)
+
+  const csv = stringify(rows, {
+    quoted_empty: true
+  })
+
+  assert.strictEqual(csv.indexOf('�'), -1)
+})

@@ -1,5 +1,5 @@
 import { fromAsyncGenerator } from '@wmakeev/highland-tools'
-import ExcelJS, { Cell } from 'exceljs'
+import ExcelJS, { Cell } from '@wmakeev/exceljs'
 import assert from 'node:assert'
 import { Stream } from 'node:stream'
 

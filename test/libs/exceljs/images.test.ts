@@ -1,5 +1,5 @@
 import assert from 'assert'
-import ExcelJS from 'exceljs'
+import ExcelJS from '@wmakeev/exceljs'
 import path from 'path'
 
 const workbook = new ExcelJS.Workbook()

@@ -68,8 +68,8 @@
     "typescript-eslint-language-service": "^5.0.5"
   },
   "dependencies": {
+    "@wmakeev/exceljs": "^4.4.4",
     "@wmakeev/highland-tools": "^1.9.1",
-    "exceljs": "^4.4.0",
     "highland": "^2.13.5"
   }
 }
